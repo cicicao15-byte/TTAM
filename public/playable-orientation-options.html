@@ -1,0 +1,824 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Creative Tile 内展示 Orientation 与 Placement Eligibility</title>
+    <style>
+      :root {
+        --bg: #f4f6fb;
+        --panel: #ffffff;
+        --panel-soft: #f8faff;
+        --line: #e5e9f0;
+        --line-strong: #cfd7e6;
+        --text: #1f2329;
+        --subtle: #5c6170;
+        --blue: #0f6fff;
+        --blue-soft: #eaf2ff;
+        --green: #0c8f5a;
+        --green-soft: #e9faf3;
+        --orange: #b46a00;
+        --orange-soft: #fff4e4;
+        --purple: #6f42d8;
+        --purple-soft: #f2ebff;
+        --shadow: 0 14px 32px rgba(31, 35, 41, 0.08);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, #ffffff 0, #f6f8fc 42%),
+          linear-gradient(180deg, #f4f6fb 0%, #eef2f8 100%);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      .page {
+        width: min(1380px, calc(100vw - 48px));
+        margin: 0 auto;
+        padding: 36px 0 64px;
+      }
+
+      .hero {
+        padding: 28px 30px;
+        margin-bottom: 24px;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.88);
+        backdrop-filter: blur(10px);
+        box-shadow: var(--shadow);
+      }
+
+      .hero h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+      }
+
+      .hero p {
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--subtle);
+      }
+
+      .rules {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .rule {
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--panel-soft);
+      }
+
+      .rule strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 13px;
+      }
+
+      .rule span {
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--subtle);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .scheme {
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: var(--shadow);
+      }
+
+      .scheme.wide {
+        grid-column: 1 / -1;
+      }
+
+      .scheme-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 22px 14px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .scheme-head h2 {
+        font-size: 18px;
+        margin-bottom: 6px;
+      }
+
+      .scheme-head p {
+        font-size: 13px;
+        line-height: 1.55;
+        color: var(--subtle);
+      }
+
+      .badge {
+        height: fit-content;
+        padding: 7px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .badge.rec {
+        color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .badge.ok {
+        color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .badge.risk {
+        color: var(--orange);
+        background: var(--orange-soft);
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+        gap: 18px;
+        padding: 20px 22px 22px;
+      }
+
+      .mock {
+        min-height: 390px;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: linear-gradient(180deg, #fafcff 0%, #f3f6fb 100%);
+      }
+
+      .notes {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .note {
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: var(--panel-soft);
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--subtle);
+      }
+
+      .note strong {
+        color: var(--text);
+      }
+
+      .modal {
+        border: 1px solid #dce2ed;
+        border-radius: 18px;
+        background: #fff;
+        overflow: hidden;
+        box-shadow: 0 12px 24px rgba(31, 35, 41, 0.05);
+      }
+
+      .modal-header {
+        padding: 18px 20px 12px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .upload-box {
+        height: 88px;
+        margin: 16px 20px 12px;
+        border: 1px dashed var(--line-strong);
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+        color: var(--subtle);
+        background: #fbfcff;
+      }
+
+      .list {
+        padding: 0 20px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .tile {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        background: #fff;
+      }
+
+      .tile-header {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .thumb {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #d7dfff 0%, #f4dfff 100%);
+        flex: 0 0 auto;
+      }
+
+      .meta {
+        min-width: 0;
+        flex: 1;
+      }
+
+      .name {
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .size {
+        margin-top: 5px;
+        font-size: 12px;
+        color: var(--subtle);
+      }
+
+      .action {
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        font-size: 12px;
+        color: var(--subtle);
+        background: #fff;
+      }
+
+      .row,
+      .platform-row,
+      .pill-row {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .row {
+        margin-top: 10px;
+      }
+
+      .muted-label {
+        font-size: 11px;
+        color: var(--subtle);
+        min-width: 54px;
+      }
+
+      .pill,
+      .platform,
+      .tiny {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+
+      .pill {
+        color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .platform {
+        color: var(--green);
+        background: var(--green-soft);
+      }
+
+      .tiny {
+        color: var(--purple);
+        background: var(--purple-soft);
+      }
+
+      .seg {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .seg-btn {
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        font-size: 12px;
+      }
+
+      .seg-btn.active {
+        border-color: var(--blue);
+        color: #fff;
+        background: var(--blue);
+      }
+
+      .inline-summary {
+        margin-top: 10px;
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fbfcff;
+      }
+
+      .split-grid {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        gap: 10px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+
+      .kv-stack {
+        display: grid;
+        gap: 10px;
+      }
+
+      .kv-card {
+        padding: 10px 12px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fbfcff;
+      }
+
+      .kv-card span {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 11px;
+        color: var(--subtle);
+      }
+
+      .compact-side {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        margin-top: 12px;
+      }
+
+      .stat-block {
+        padding: 8px 10px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: #fbfcff;
+        min-width: 118px;
+      }
+
+      .stat-block span {
+        display: block;
+        font-size: 10px;
+        color: var(--subtle);
+        margin-bottom: 4px;
+      }
+
+      .expand {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
+
+      .footer {
+        margin-top: 22px;
+        padding: 16px 18px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.92);
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--subtle);
+      }
+
+      .footer strong {
+        color: var(--text);
+      }
+
+      @media (max-width: 1120px) {
+        .rules,
+        .grid,
+        .content {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <h1>Creative Tile 内展示 Orientation 与 Placement Eligibility</h1>
+        <p>
+          这次只保留满足你约束的方案：`orientation` 和 `Placement eligibility`
+          必须都放在每个 `creative tile` 里，而且每个 tile 都可以独立设置。重点不再讨论 tile 外部区域，而是比较在 tile
+          内部如何兼顾可编辑性、空间效率和平台限制的可见性。
+        </p>
+        <div class="rules">
+          <div class="rule">
+            <strong>Horizontal or vertical</strong>
+            <span>Placement eligibility: TikTok + Pangle</span>
+          </div>
+          <div class="rule">
+            <strong>Only horizontal</strong>
+            <span>Placement eligibility: Pangle only</span>
+          </div>
+          <div class="rule">
+            <strong>Only vertical</strong>
+            <span>Placement eligibility: TikTok + Pangle</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="scheme">
+          <div class="scheme-head">
+            <div>
+              <h2>方案 1: 双行 Meta 信息</h2>
+              <p>文件名下方固定两行，第一行放 orientation，第二行放 Placement eligibility。结构最直接。</p>
+            </div>
+            <span class="badge ok">最清楚</span>
+          </div>
+          <div class="content">
+            <div class="mock">
+              <div class="modal">
+                <div class="modal-header">
+                  <div class="modal-title">Upload playable asset</div>
+                </div>
+                <div class="upload-box">Drop files here, or click to upload</div>
+                <div class="list">
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_title.zip</div>
+                        <div class="size">2MB</div>
+                      </div>
+                      <div class="action">Edit</div>
+                    </div>
+                    <div class="row">
+                      <span class="muted-label">Orientation</span>
+                      <span class="pill">Only horizontal</span>
+                    </div>
+                    <div class="row">
+                      <span class="muted-label">Eligible</span>
+                      <span class="platform">Pangle</span>
+                    </div>
+                  </div>
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_dual.zip</div>
+                        <div class="size">2MB</div>
+                      </div>
+                      <div class="action">Edit</div>
+                    </div>
+                    <div class="row">
+                      <span class="muted-label">Orientation</span>
+                      <span class="pill">Horizontal or vertical</span>
+                    </div>
+                    <div class="row">
+                      <span class="muted-label">Eligible</span>
+                      <span class="platform">TikTok</span>
+                      <span class="platform">Pangle</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="notes">
+              <div class="note"><strong>优点:</strong> 用户扫列表时最容易理解，没有任何信息被藏起来。</div>
+              <div class="note"><strong>缺点:</strong> 每个 tile 至少增高两行，列表一长会显得重。</div>
+              <div class="note"><strong>适合:</strong> 当前字段不多，且你希望平台限制永远可见。</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="scheme">
+          <div class="scheme-head">
+            <div>
+              <h2>方案 2: 右侧摘要块</h2>
+              <p>左侧保留文件信息，右侧塞一个紧凑的 status block，同时显示 orientation 和 eligible 平台。</p>
+            </div>
+            <span class="badge rec">空间最省</span>
+          </div>
+          <div class="content">
+            <div class="mock">
+              <div class="modal">
+                <div class="modal-header">
+                  <div class="modal-title">Upload playable asset</div>
+                </div>
+                <div class="upload-box">Drop files here, or click to upload</div>
+                <div class="list">
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_title.zip</div>
+                        <div class="size">2MB</div>
+                        <div class="compact-side">
+                          <div class="seg">
+                            <span class="seg-btn active">H</span>
+                            <span class="seg-btn">V</span>
+                            <span class="seg-btn">H/V</span>
+                          </div>
+                          <div class="stat-block">
+                            <span>Eligibility</span>
+                            Pangle
+                          </div>
+                        </div>
+                      </div>
+                      <div class="action">Edit</div>
+                    </div>
+                  </div>
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_vertical.zip</div>
+                        <div class="size">2MB</div>
+                        <div class="compact-side">
+                          <div class="seg">
+                            <span class="seg-btn">H</span>
+                            <span class="seg-btn active">V</span>
+                            <span class="seg-btn">H/V</span>
+                          </div>
+                          <div class="stat-block">
+                            <span>Eligibility</span>
+                            TikTok, Pangle
+                          </div>
+                        </div>
+                      </div>
+                      <div class="action">Edit</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="notes">
+              <div class="note"><strong>优点:</strong> 仍然在 tile 内，但不会把 tile 拉得太高。</div>
+              <div class="note"><strong>风险:</strong> `H / V / H/V` 的语义太压缩，新用户可能需要学习成本。</div>
+              <div class="note"><strong>适合:</strong> 你非常在意列表密度，并且愿意接受更产品化的缩写表达。</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="scheme wide">
+          <div class="scheme-head">
+            <div>
+              <h2>方案 3: Tile 内嵌 Segmented Control + 实时结果</h2>
+              <p>把 orientation 直接做成 tile 内的 segmented control，下面紧跟一条 Placement eligibility 结果。信息和操作在一起。</p>
+            </div>
+            <span class="badge rec">推荐优先</span>
+          </div>
+          <div class="content">
+            <div class="mock">
+              <div class="modal">
+                <div class="modal-header">
+                  <div class="modal-title">Upload playable asset</div>
+                </div>
+                <div class="upload-box">Drop files here, or click to upload</div>
+                <div class="list">
+                  <div class="tile" style="border-color: #bfd7ff; background: #fbfdff">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_title.zip</div>
+                        <div class="size">2MB</div>
+                      </div>
+                      <div class="action">Delete</div>
+                    </div>
+                    <div class="inline-summary">
+                      <div class="row" style="margin-top: 0">
+                        <span class="muted-label">Orientation</span>
+                        <div class="seg">
+                          <span class="seg-btn">H/V</span>
+                          <span class="seg-btn active">Only H</span>
+                          <span class="seg-btn">Only V</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <span class="muted-label">Eligible</span>
+                        <span class="platform">Pangle</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_title_02.zip</div>
+                        <div class="size">2MB</div>
+                      </div>
+                      <div class="action">Delete</div>
+                    </div>
+                    <div class="inline-summary">
+                      <div class="row" style="margin-top: 0">
+                        <span class="muted-label">Orientation</span>
+                        <div class="seg">
+                          <span class="seg-btn active">H/V</span>
+                          <span class="seg-btn">Only H</span>
+                          <span class="seg-btn">Only V</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <span class="muted-label">Eligible</span>
+                        <span class="platform">TikTok</span>
+                        <span class="platform">Pangle</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="notes">
+              <div class="note"><strong>优点:</strong> 这是最符合“每个 tile 单独设置”的表达。用户改 orientation 后，立刻看到 eligibility 变化。</div>
+              <div class="note"><strong>优点:</strong> `orientation` 是动作，`Placement eligibility` 是结果，这种上下关系非常清楚。</div>
+              <div class="note"><strong>结论:</strong> 如果你要真的上线一个可编辑方案，这个最稳。</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="scheme">
+          <div class="scheme-head">
+            <div>
+              <h2>方案 4: Tile 底部展开区</h2>
+              <p>默认态只显示一个压缩摘要，点击 “Edit” 后在 tile 底部展开 orientation 设置和 eligibility 详情。</p>
+            </div>
+            <span class="badge ok">默认更干净</span>
+          </div>
+          <div class="content">
+            <div class="mock">
+              <div class="modal">
+                <div class="modal-header">
+                  <div class="modal-title">Upload playable asset</div>
+                </div>
+                <div class="upload-box">Drop files here, or click to upload</div>
+                <div class="list">
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_title.zip</div>
+                        <div class="size">2MB</div>
+                        <div class="pill-row" style="margin-top: 10px">
+                          <span class="tiny">Only vertical</span>
+                          <span class="tiny">TikTok + Pangle</span>
+                        </div>
+                      </div>
+                      <div class="action">Collapse</div>
+                    </div>
+                    <div class="expand">
+                      <div class="row" style="margin-top: 0">
+                        <span class="muted-label">Orientation</span>
+                        <div class="seg">
+                          <span class="seg-btn">H/V</span>
+                          <span class="seg-btn">Only H</span>
+                          <span class="seg-btn active">Only V</span>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <span class="muted-label">Eligible</span>
+                        <span class="platform">TikTok</span>
+                        <span class="platform">Pangle</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_title_02.zip</div>
+                        <div class="size">2MB</div>
+                        <div class="pill-row" style="margin-top: 10px">
+                          <span class="tiny">Only horizontal</span>
+                          <span class="tiny">Pangle</span>
+                        </div>
+                      </div>
+                      <div class="action">Edit</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="notes">
+              <div class="note"><strong>优点:</strong> 默认列表态不重，仍然满足信息在 tile 内。</div>
+              <div class="note"><strong>缺点:</strong> 展开前用户只能看到压缩摘要，设置动作有一步额外点击。</div>
+              <div class="note"><strong>适合:</strong> 一个弹窗里 tile 数量较多，你不希望所有 tile 默认都很高。</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="scheme">
+          <div class="scheme-head">
+            <div>
+              <h2>方案 5: Tile 内双卡片分区</h2>
+              <p>tile 头部还是文件信息，下半部分用两个小卡片并列展示 “Orientation” 与 “Placement eligibility”。</p>
+            </div>
+            <span class="badge risk">更像配置卡</span>
+          </div>
+          <div class="content">
+            <div class="mock">
+              <div class="modal">
+                <div class="modal-header">
+                  <div class="modal-title">Upload playable asset</div>
+                </div>
+                <div class="upload-box">Drop files here, or click to upload</div>
+                <div class="list">
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_title.zip</div>
+                        <div class="size">2MB</div>
+                      </div>
+                      <div class="action">Edit</div>
+                    </div>
+                    <div class="split-grid">
+                      <div class="kv-card">
+                        <span>Orientation</span>
+                        <div class="seg">
+                          <span class="seg-btn active">Only H</span>
+                        </div>
+                      </div>
+                      <div class="kv-card">
+                        <span>Placement eligibility</span>
+                        <div class="platform-row">
+                          <span class="platform">Pangle</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tile">
+                    <div class="tile-header">
+                      <div class="thumb"></div>
+                      <div class="meta">
+                        <div class="name">playable_title_02.zip</div>
+                        <div class="size">2MB</div>
+                      </div>
+                      <div class="action">Edit</div>
+                    </div>
+                    <div class="split-grid">
+                      <div class="kv-card">
+                        <span>Orientation</span>
+                        <div class="seg">
+                          <span class="seg-btn active">H/V</span>
+                        </div>
+                      </div>
+                      <div class="kv-card">
+                        <span>Placement eligibility</span>
+                        <div class="platform-row">
+                          <span class="platform">TikTok</span>
+                          <span class="platform">Pangle</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="notes">
+              <div class="note"><strong>优点:</strong> 语义上最规整，像一个真正的素材配置单元。</div>
+              <div class="note"><strong>缺点:</strong> 视觉重量偏大，tile 会比普通列表项更像表单卡片。</div>
+              <div class="note"><strong>适合:</strong> 未来 tile 里还会继续增加 1~2 个素材级字段。</div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="footer">
+        <strong>新的建议:</strong> 在你这个约束下，优先看 <strong>方案 3</strong> 和 <strong>方案 4</strong>。
+        如果你希望用户在每个 tile 上直接完成设置，选 <strong>方案 3</strong>；如果你担心列表过长、默认态太重，选
+        <strong>方案 4</strong>。<strong>方案 1</strong> 虽然最直白，但更像“展示结果”，没有很好体现“单独设置”这件事。
+      </section>
+    </main>
+  </body>
+</html>
