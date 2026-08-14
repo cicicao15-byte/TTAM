@@ -4,3 +4,13 @@ dist
 .DS_Store
 .vendor
 vendor
+.vercel
+.vercel-home
+.git-temp
+.git-push-tmp
+.trae-artifacts
+debug-preview-white-screen.md
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
