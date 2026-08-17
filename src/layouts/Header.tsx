@@ -4,6 +4,7 @@ import { KsBadge, KsMultipleGlobalAlert } from '@byted-keystone/react';
 import { KsIconSearch, KsIconHelp, KsIconBell } from '@fe-infra/keystone-icons-react';
 import { AppHeader, HeaderIconButton, HeaderAccountDropdown } from '@/components/app-header';
 import tiktokLogo from '@/assets/tiktok-logo.svg';
+import { DEMO_NAV_OPTIONS } from '@/infra/demoRoutes';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/' },
@@ -66,6 +67,7 @@ export function Header() {
         brandHref="/"
         userInitial="J"
         navItems={NAV_ITEMS}
+        demoOptions={DEMO_NAV_OPTIONS}
         trailingActions={
           <>
             <HeaderIconButton icon={<KsIconSearch size={24} />} ariaLabel="Search" />

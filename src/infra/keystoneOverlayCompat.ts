@@ -11,8 +11,8 @@
 // DOM (including inside the shadow roots of KsModal/KsDrawer/etc) so
 // vibe-coded modals stay below the feedback toolbar.
 
-// Sit below DevNav (100000) and the Agentation toolbar (~100001) so both
-// playground dev affordances remain interactive over any open KsModal.
+// Sit below the Agentation toolbar (~100001) so the playground feedback UI
+// remains interactive over any open KsModal.
 const Z_INDEX_OVERRIDE = '99999';
 
 function isOverlay(node: Node): node is HTMLElement {
