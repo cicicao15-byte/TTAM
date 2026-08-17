@@ -6,6 +6,12 @@ import RootLayout from '@/layouts/RootLayout';
 import AdsDashboard from '@/pages/AdsDashboard';
 import AdsCampaign from '@/pages/AdsCampaign';
 import AdsEdit from '@/pages/AdsEdit';
+import CarouselTemplateEditor from '@/pages/CarouselTemplateEditor';
+import CarouselTemplateEditor2 from '@/pages/CarouselTemplateEditor2';
+import CarouselTemplateEditor3 from '@/pages/CarouselTemplateEditor3';
+import CarouselTemplateEditor4 from '@/pages/CarouselTemplateEditor4';
+import CarouselTemplateEditor5 from '@/pages/CarouselTemplateEditor5';
+import CarouselTemplateEditor6 from '@/pages/CarouselTemplateEditor6';
 import NotFoundPage from '@/pages/NotFound';
 import { installKeystoneOverlayCompat } from '@/infra/keystoneOverlayCompat';
 
@@ -21,16 +27,43 @@ createRoot(document.getElementById('root')!).render(
           <Route index element={<AdsDashboard />} />
           <Route path="campaigns" element={<AdsCampaign />} />
           <Route
+            path="carousel-template-editor-1"
+            element={<CarouselTemplateEditor />}
+          />
+          <Route
+            path="carousel-template-editor-2"
+            element={<CarouselTemplateEditor2 />}
+          />
+          <Route
+            path="carousel-template-editor-3"
+            element={<CarouselTemplateEditor3 />}
+          />
+          <Route
+            path="carousel-template-editor-4"
+            element={<CarouselTemplateEditor4 />}
+          />
+          <Route
+            path="carousel-template-editor-5"
+            element={<CarouselTemplateEditor5 />}
+          />
+          <Route
+            path="carousel-template-editor-6"
+            element={<CarouselTemplateEditor6 />}
+          />
+          <Route
             path="ads/edit"
-            element={(
+            element={
               <AdsEdit
                 initialDestinationUrl=""
                 destinationUrlPlaceholder="Enter PDP/PHP URL starting with http:// or https://"
                 deferInitialEmptyUrlError
               />
-            )}
+            }
           />
-          <Route path="ads/edit-2" element={<AdsEdit persistAcaUrlEditConsent />} />
+          <Route
+            path="ads/edit-2"
+            element={<AdsEdit persistAcaUrlEditConsent />}
+          />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

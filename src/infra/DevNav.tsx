@@ -7,6 +7,12 @@ const NAV_OPTIONS = [
   { value: '/campaigns', label: 'Ads Campaign' },
   { value: '/ads/edit', label: 'Ads Edit-1' },
   { value: '/ads/edit-2', label: 'Ads Edit-2' },
+  { value: '/carousel-template-editor-1', label: 'Carousel Template Editor - 1' },
+  { value: '/carousel-template-editor-2', label: 'Carousel Template Editor - 2' },
+  { value: '/carousel-template-editor-3', label: 'Carousel Template Editor - 3' },
+  { value: '/carousel-template-editor-4', label: 'Carousel Template Editor - 4' },
+  { value: '/carousel-template-editor-5', label: 'Carousel Template Editor - 5' },
+  { value: '/carousel-template-editor-6', label: 'Carousel Template Editor - 6' },
 ];
 
 export default function DevNav() {
