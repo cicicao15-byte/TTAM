@@ -139,12 +139,51 @@ const LIST_START_DROP_ID = '__list_start__';
 
 type TextAlignMode = 'left' | 'center' | 'right';
 
-const TOOL_ITEMS: Array<{ key: ToolKey; label: string; short: string }> = [
-  { key: 'template', label: 'Template', short: 'T' },
-  { key: 'background', label: 'Background', short: 'B' },
-  { key: 'text', label: 'Text', short: 'Tx' },
-  { key: 'sticker', label: 'Sticker', short: 'S' },
+const TOOL_ITEMS: Array<{ key: ToolKey; label: string }> = [
+  { key: 'template', label: 'Template' },
+  { key: 'background', label: 'Background' },
+  { key: 'text', label: 'Text' },
+  { key: 'sticker', label: 'Sticker' },
 ];
+
+function EditorToolIcon({ tool }: { tool: ToolKey }) {
+  const iconClassName = 'h-5 w-5';
+
+  if (tool === 'template') {
+    return (
+      <svg className={iconClassName} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="5.25" y="5.25" width="13.5" height="13.5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M10.5 8.5h-2v2M13.5 8.5h2v2M10.5 15.5h-2v-2M13.5 15.5h2v-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  if (tool === 'background') {
+    return (
+      <svg className={iconClassName} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="5.25" y="5.25" width="13.5" height="13.5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <path d="m6.5 16 3.55-3.85a1 1 0 0 1 1.46 0l1.72 1.85 1.9-2.08a1 1 0 0 1 1.48.02l1.14 1.28" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <circle cx="9.35" cy="9.25" r="1.15" fill="currentColor" />
+      </svg>
+    );
+  }
+
+  if (tool === 'text') {
+    return (
+      <svg className={iconClassName} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <rect x="5.25" y="5.25" width="13.5" height="13.5" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M8.5 9h7M12 9v6.5M10.35 15.5h3.3" stroke="currentColor" strokeWidth="1.55" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg className={iconClassName} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M4.75 11.8C4.75 7.9 7.9 4.75 11.8 4.75h.4c3.9 0 7.05 3.15 7.05 7.05v.4c0 1.6-.53 3.08-1.43 4.27l-3.65 3.65a7.02 7.02 0 0 1-2.37.38h-.4a7.05 7.05 0 0 1-6.65-4.72 7.3 7.3 0 0 1 0-3.98Z" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M19.25 11.8h-1.8a5.65 5.65 0 0 0-5.65 5.65v1.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 const DEFAULT_STATIC_LAYER_ORDERS: Record<StaticDraggableLayerKey, number> = {
   decorationArrow: 4,
@@ -1904,7 +1943,7 @@ export default function CarouselTemplateEditor() {
           <>
             <div className="absolute inset-0 bg-black/30" />
             <div className="absolute inset-y-0 right-0 flex w-[1120px] bg-neutral-surface shadow-[-12px_0_40px_rgba(0,0,0,0.14)]">
-              <div className="flex w-[96px] flex-col items-center gap-4 border-r border-neutral-fillLow bg-neutral-surface px-2 py-6">
+              <nav aria-label="Carousel editor tools" className="flex w-[96px] flex-col items-center gap-3 border-r border-neutral-fillLow bg-neutral-surface px-3 py-4">
                 {TOOL_ITEMS.map((item) => {
                   const active = item.key === activeTool;
                   return (
@@ -1912,23 +1951,18 @@ export default function CarouselTemplateEditor() {
                       key={item.key}
                       type="button"
                       onClick={() => setActiveTool(item.key)}
-                      className="flex w-full flex-col items-center gap-2"
+                      aria-pressed={active}
+                      className={[
+                        'flex h-14 w-full flex-col items-center justify-center gap-1 rounded-[4px] transition-colors',
+                        active ? 'bg-[#f3f3f3] text-[#161823]' : 'text-[#6b6f76] hover:bg-[#f7f7f7]',
+                      ].join(' ')}
                     >
-                      <div
-                        className={[
-                          'flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-semibold',
-                          active
-                            ? 'bg-primary-fill text-primary-onFill'
-                            : 'bg-neutral-surface2 text-neutral-lowOnSurface',
-                        ].join(' ')}
-                      >
-                        {item.short}
-                      </div>
-                      <span className="text-center text-[11px] text-neutral-highOnSurface">{item.label}</span>
+                      <EditorToolIcon tool={item.key} />
+                      <span className="text-center text-[12px] leading-4">{item.label}</span>
                     </button>
                   );
                 })}
-              </div>
+              </nav>
 
               <div className="flex min-w-0 flex-1 justify-between bg-[#ffffff] pb-[76px]">
                 <div className="w-[304px] overflow-y-auto border-r border-neutral-fillLow px-4 py-6">
