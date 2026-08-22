@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { Header } from '@/layouts/Header';
+import { EditorToolIcon } from '@/components/carousel/EditorToolIcon';
 
 type ToolKey = 'template' | 'background' | 'text' | 'sticker';
 type StaticDraggableLayerKey = 'decorationBand' | 'product' | 'decorationPattern' | 'decorationArrow';
@@ -2589,7 +2590,7 @@ export default function CarouselTemplateEditor5() {
             <div className="absolute inset-0 bg-black/30" />
             <div className="absolute inset-y-0 right-0 flex w-[1120px] max-w-full bg-neutral-surface shadow-[-12px_0_40px_rgba(0,0,0,0.14)]">
               <div
-                className="flex w-[96px] shrink-0 flex-col border-r border-neutral-fillLow bg-neutral-surface px-2 py-6"
+                className="flex w-[96px] shrink-0 flex-col border-r border-neutral-fillLow bg-neutral-surface px-3 py-4"
                 onMouseLeave={(event) => {
                   const bounds = event.currentTarget.getBoundingClientRect();
                   if (event.clientX <= bounds.left) {
@@ -2597,7 +2598,7 @@ export default function CarouselTemplateEditor5() {
                   }
                 }}
               >
-                <div className="flex flex-col items-center gap-4">
+                <div className="flex flex-col items-center gap-3">
                   {TOOL_ITEMS.map((item) => {
                     const emphasized = item.key === visibleToolPanel;
                     return (
@@ -2611,19 +2612,14 @@ export default function CarouselTemplateEditor5() {
                           setActiveTool(item.key);
                           setToolPanelVisible(true);
                         }}
-                        className="flex w-full flex-col items-center gap-2"
+                        aria-pressed={emphasized}
+                        className={[
+                          'flex h-14 w-full flex-col items-center justify-center gap-1 rounded-[4px] transition-colors',
+                          emphasized ? 'bg-[#f3f3f3] text-[#161823]' : 'text-[#6b6f76] hover:bg-[#f7f7f7]',
+                        ].join(' ')}
                       >
-                        <div
-                          className={[
-                            'flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-semibold',
-                            emphasized
-                              ? 'bg-primary-fill text-primary-onFill'
-                              : 'bg-neutral-surface2 text-neutral-lowOnSurface',
-                          ].join(' ')}
-                        >
-                          {item.short}
-                        </div>
-                        <span className="text-center text-[11px] text-neutral-highOnSurface">{item.label}</span>
+                        <EditorToolIcon tool={item.key} />
+                        <span className="text-center text-[12px] leading-4">{item.label}</span>
                       </button>
                     );
                   })}

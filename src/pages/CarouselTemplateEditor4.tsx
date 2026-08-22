@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
 import { Header } from '@/layouts/Header';
+import { EditorToolNavItem } from '@/components/carousel/EditorToolIcon';
 
 type ToolKey = 'template' | 'background' | 'text' | 'sticker';
 type StaticDraggableLayerKey = 'decorationBand' | 'product' | 'decorationPattern' | 'decorationArrow';
@@ -2112,32 +2113,21 @@ export default function CarouselTemplateEditor4() {
           <>
             <div className="absolute inset-0 bg-black/30" />
             <div className="absolute inset-y-0 right-0 flex w-[1120px] max-w-full bg-neutral-surface shadow-[-12px_0_40px_rgba(0,0,0,0.14)]">
-              <div className="flex w-[96px] shrink-0 flex-col border-r border-neutral-fillLow bg-neutral-surface px-2 py-6">
-                <div className="flex flex-col items-center gap-4">
+              <div className="flex w-[96px] shrink-0 flex-col border-r border-neutral-fillLow bg-neutral-surface px-3 py-4">
+                <div className="flex flex-col items-center gap-3">
                   {TOOL_ITEMS.map((item) => {
                     const active = item.key === activeTool;
                     return (
-                      <button
+                      <EditorToolNavItem
                         key={item.key}
-                        type="button"
                         onClick={() => {
                           setActiveTool(item.key);
                           setToolPanelVisible(true);
                         }}
-                        className="flex w-full flex-col items-center gap-2"
-                      >
-                        <div
-                          className={[
-                            'flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-semibold',
-                            active
-                              ? 'bg-primary-fill text-primary-onFill'
-                              : 'bg-neutral-surface2 text-neutral-lowOnSurface',
-                          ].join(' ')}
-                        >
-                          {item.short}
-                        </div>
-                        <span className="text-center text-[11px] text-neutral-highOnSurface">{item.label}</span>
-                      </button>
+                        active={active}
+                        label={item.label}
+                        tool={item.key}
+                      />
                     );
                   })}
                 </div>
