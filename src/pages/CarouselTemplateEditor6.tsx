@@ -1,8 +1,10 @@
 import { useMemo, useRef, useState, type ReactNode } from 'react';
+import { KsTabs, KsTabItem } from '@byted-keystone/react';
 import { Header } from '@/layouts/Header';
 import { EditorToolIcon } from '@/components/carousel/EditorToolIcon';
 
 type ToolKey = 'template' | 'background' | 'text' | 'sticker';
+type TemplateTabKey = 'recommended' | 'saved';
 type StaticDraggableLayerKey = 'decorationBand' | 'product' | 'decorationPattern' | 'decorationArrow';
 type LayerKey =
   | 'backgroundPrimary'
@@ -1476,6 +1478,7 @@ function ProductLayerRow({
 export default function CarouselTemplateEditor6() {
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [activeTool, setActiveTool] = useState<ToolKey>('template');
+  const [templateTab, setTemplateTab] = useState<TemplateTabKey>('recommended');
   const [toolPanelVisible, setToolPanelVisible] = useState(false);
   const [hoveredTool, setHoveredTool] = useState<ToolKey | null>(null);
   const [activeLayerKey, setActiveLayerKey] = useState<LayerKey>('product');
@@ -2021,42 +2024,65 @@ export default function CarouselTemplateEditor6() {
     if (tool === 'template') {
       return (
         <>
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <div>
-              <div className="text-[14px] font-semibold text-neutral-highOnSurface">Recommended templates</div>
-              <div className="mt-1 max-w-[240px] text-[12px] leading-5 text-neutral-lowOnSurface">
-                Templates are optimized to maximize campaign performance. For best results, we recommend not making any edits to them.
-              </div>
-            </div>
+          <div className="mb-2">
+            <KsTabs
+              activeTabId={templateTab}
+              size="md"
+              type="default"
+              onActiveTabIdChange={(value: string | CustomEvent<string | [string]>) => {
+                const next = typeof value === 'string'
+                  ? value
+                  : Array.isArray(value.detail)
+                    ? value.detail[0]
+                    : value.detail;
+                if (next === 'recommended' || next === 'saved') {
+                  setTemplateTab(next);
+                }
+              }}
+            >
+              <span slot="recommended">Recommended</span>
+              <span slot="saved">Your saved</span>
+              <KsTabItem tabId="recommended" />
+              <KsTabItem tabId="saved" />
+            </KsTabs>
+          </div>
+          <div className="mb-4 text-[12px] leading-4 text-neutral-onSurface">
+            Templates are optimized to maximize campaign performance. For best results, we recommend not making any edits to them.
           </div>
 
-          <div className="space-y-5 pb-2">
-            {TEMPLATE_GROUPS.map((group) => (
-              <div key={group.title}>
-                <div className="mb-2 flex items-center justify-between">
-                  <div className="text-[13px] font-semibold text-neutral-highOnSurface">{group.title}</div>
-                  <button type="button" className="text-[11px] font-medium text-primary-onSurface">
-                    See all
-                  </button>
+          {templateTab === 'recommended' ? (
+            <div className="space-y-5 pb-2">
+              {TEMPLATE_GROUPS.map((group) => (
+                <div key={group.title}>
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="text-[13px] font-semibold text-neutral-highOnSurface">{group.title}</div>
+                    <button type="button" className="text-[11px] font-medium text-primary-onSurface">
+                      See all
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {group.items.map((item) => (
+                      <div
+                        key={item.id}
+                        onClick={() => {
+                          captureHistory();
+                          setSelectedTemplateId(item.id);
+                          setToolPanelVisible(false);
+                          setLastAction(`Selected ${item.label}`);
+                        }}
+                      >
+                        <TemplateThumbnail card={item} active={item.id === selectedTemplateId} />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {group.items.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => {
-                        captureHistory();
-                        setSelectedTemplateId(item.id);
-                        setToolPanelVisible(false);
-                        setLastAction(`Selected ${item.label}`);
-                      }}
-                    >
-                      <TemplateThumbnail card={item} active={item.id === selectedTemplateId} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex h-[160px] items-center justify-center text-[12px] text-neutral-onSurface">
+              No saved templates yet.
+            </div>
+          )}
         </>
       );
     }
