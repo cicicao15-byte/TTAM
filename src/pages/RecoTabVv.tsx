@@ -20,15 +20,37 @@ const CREATOR_ASSETS: CreatorAsset[] = [
 ];
 
 const RECOMMENDED_ASSET_IDS = [1, 2, 3, 4];
+const INITIAL_ADS = ['Ad name2026-08-18 07:02:34'];
 
 export default function RecoTabVv() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [savedAutoSelect, setSavedAutoSelect] = useState(true);
   const [autoSelect, setAutoSelect] = useState(true);
   const [hasAcknowledgedAutoSelect, setHasAcknowledgedAutoSelect] = useState(false);
+  const [hasDismissedOuterNotice, setHasDismissedOuterNotice] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>(RECOMMENDED_ASSET_IDS);
   const [autoSelectedIds, setAutoSelectedIds] = useState<number[]>(RECOMMENDED_ASSET_IDS);
+  const [ads, setAds] = useState<string[]>(INITIAL_ADS);
+  const [activeAdIndex, setActiveAdIndex] = useState(0);
   const [activeTab, setActiveTab] = useState('Recommended');
+
+  const isFirstAd = activeAdIndex === 0;
+
+  const selectAd = (index: number) => {
+    setActiveAdIndex(index);
+    setDrawerOpen(false);
+    const shouldUseAutoSelect = index === 0 && savedAutoSelect;
+    setAutoSelect(shouldUseAutoSelect);
+    setSelectedIds(shouldUseAutoSelect ? RECOMMENDED_ASSET_IDS : []);
+    setAutoSelectedIds(shouldUseAutoSelect ? RECOMMENDED_ASSET_IDS : []);
+    setHasAcknowledgedAutoSelect(!shouldUseAutoSelect);
+  };
+
+  const addAd = () => {
+    const nextIndex = ads.length;
+    setAds((previous) => [...previous, `Ad name2026-08-18 07:02:${String(34 + nextIndex).padStart(2, '0')}`]);
+    selectAd(nextIndex);
+  };
 
   const toggleAsset = (id: number) => {
     setSelectedIds((previous) => (previous.includes(id) ? previous.filter((item) => item !== id) : [...previous, id]));
@@ -63,23 +85,28 @@ export default function RecoTabVv() {
     setAutoSelect(savedAutoSelect);
     setSelectedIds(savedAutoSelect ? RECOMMENDED_ASSET_IDS : []);
     setAutoSelectedIds(savedAutoSelect ? RECOMMENDED_ASSET_IDS : []);
+    setHasAcknowledgedAutoSelect(!savedAutoSelect);
     setDrawerOpen(false);
   };
 
   const reopenDrawer = () => {
-    setAutoSelect(savedAutoSelect);
-    setSelectedIds(savedAutoSelect ? RECOMMENDED_ASSET_IDS : []);
-    setAutoSelectedIds(savedAutoSelect ? RECOMMENDED_ASSET_IDS : []);
+    const shouldUseAutoSelect = isFirstAd && savedAutoSelect;
+    setAutoSelect(shouldUseAutoSelect);
+    setSelectedIds(shouldUseAutoSelect ? RECOMMENDED_ASSET_IDS : []);
+    setAutoSelectedIds(shouldUseAutoSelect ? RECOMMENDED_ASSET_IDS : []);
+    // The inner notice belongs to this drawer visit. Saved-off auto-select keeps it hidden.
+    setHasAcknowledgedAutoSelect(!shouldUseAutoSelect);
     setDrawerOpen(true);
   };
 
   const saveSelection = () => {
-    setSavedAutoSelect(autoSelect);
+    if (isFirstAd) setSavedAutoSelect(autoSelect);
     setDrawerOpen(false);
   };
 
   const allAssetsSelected = selectedIds.length === CREATOR_ASSETS.length;
   const someAssetsSelected = selectedIds.length > 0 && !allAssetsSelected;
+  const showOuterAutoSelectNotice = isFirstAd && savedAutoSelect && !hasDismissedOuterNotice;
 
   return (
     <div className="min-h-screen bg-[#f7f7f7] text-[#161823]">
@@ -90,8 +117,12 @@ export default function RecoTabVv() {
           <aside className="w-[300px] shrink-0 border-r border-[#e4e5e7] bg-white px-5 py-5">
             <div className="mb-6 flex items-center gap-2 text-[13px] font-medium"><span className="h-4 w-7 rounded-full bg-[#4fa9a5] p-0.5"><span className="block h-3 w-3 translate-x-3 rounded-full bg-white" /></span>Campaign turned on <span className="text-[#9ca0a5]">ⓘ</span></div>
             <div className="rounded-[6px] bg-[#f5f5f5] px-4 py-3 text-[14px] font-semibold">Video view20260818230</div>
-            <div className="mt-5 text-[12px] text-[#575b61]">⌄ &nbsp; Ad group 20260818070224</div>
-            <div className="mt-3 flex items-center gap-2 rounded-[6px] bg-[#e8f8f7] px-3 py-3 text-[12px]"><span className="flex h-4 w-4 items-center justify-center rounded border border-[#bbbfc3] text-[10px]">▧</span><span>Ad name2026-08-18 07:02:34</span><span className="ml-auto">⋮</span></div>
+            <div className="mt-5 flex items-center justify-between text-[12px] text-[#575b61]"><span>⌄ &nbsp; Ad group 20260818070224</span><button type="button" onClick={addAd} className="rounded-[3px] border border-[#bfc3c7] bg-white px-2 py-1 text-[11px] font-medium text-[#45494d]">＋ Add Ad</button></div>
+            <div className="mt-3 space-y-2">
+              {ads.map((ad, index) => (
+                <button key={ad} type="button" onClick={() => selectAd(index)} className={`flex w-full items-center gap-2 rounded-[6px] px-3 py-3 text-left text-[12px] ${activeAdIndex === index ? 'bg-[#e8f8f7]' : 'bg-white hover:bg-[#f5f6f6]'}`}><span className="flex h-4 w-4 items-center justify-center rounded border border-[#bbbfc3] text-[10px]">▧</span><span className="min-w-0 flex-1 truncate">{ad}</span><span>⋮</span></button>
+              ))}
+            </div>
           </aside>
 
           <main className="min-w-0 flex-1 bg-[#f7f7f8] px-10 py-5">
@@ -99,23 +130,26 @@ export default function RecoTabVv() {
               <h1 className="mb-5 text-[18px] font-semibold">Ad</h1>
               <section className="rounded-[7px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
                 <div className="flex items-center justify-between"><h2 className="text-[15px] font-semibold">Ad name</h2><span className="text-[#45494d]">⌃</span></div>
-                <div className="mt-4 h-8 max-w-[430px] rounded-[2px] border border-[#d9dbde] px-3 py-2 text-[11px] text-[#45494d]">Ad name2026-08-18 07:02:34</div>
+                <div className="mt-4 h-8 max-w-[430px] rounded-[2px] border border-[#d9dbde] px-3 py-2 text-[11px] text-[#45494d]">{ads[activeAdIndex]}</div>
               </section>
 
               <div className="mt-3 grid grid-cols-[minmax(0,1fr)_300px] gap-3">
                 <section className="rounded-[7px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
                   <div className="flex items-center justify-between"><h2 className="text-[15px] font-semibold">Creative assets <span className="text-[11px] font-normal text-[#777b82]">ⓘ</span></h2><span className="text-[#45494d]">⌃</span></div>
                   <p className="mt-2 max-w-[500px] text-[11px] leading-4 text-[#777b82]">Creative assets will be combined with your text and add-ons to create high-performing, tailored ad variations.</p>
-                  <div className="mt-3">
-                    <KsInlineAlert
-                      variant="suggestion"
-                      size="sm"
-                      inverse
-                      content="Up to 4 recommended creator assets will be automatically selected when you add creatives. You can review and adjust the selections before saving."
-                    >
-                      <button slot="actions" type="button" onClick={reopenDrawer} className="text-[11px] font-medium text-[#137e78]">Review recommendations</button>
-                    </KsInlineAlert>
-                  </div>
+                  {showOuterAutoSelectNotice && (
+                    <div className="mt-3">
+                      <KsInlineAlert
+                        variant="suggestion"
+                        size="sm"
+                        inverse
+                        content="Up to 4 recommended creator assets will be automatically selected when you add creatives. You can review and adjust the selections before saving."
+                        afterClose={() => setHasDismissedOuterNotice(true)}
+                      >
+                        <button slot="actions" type="button" onClick={reopenDrawer} className="text-[11px] font-medium text-[#137e78]">Review recommendations</button>
+                      </KsInlineAlert>
+                    </div>
+                  )}
                   <div className="mt-4 flex gap-2 border-t border-[#eff0f1] pt-3">
                     <button type="button" onClick={reopenDrawer} className="rounded-[3px] border border-[#bfc3c7] bg-white px-3 py-1.5 text-[12px] font-medium">＋ Add</button>
                     <button type="button" className="rounded-[3px] border border-[#bfc3c7] bg-white px-3 py-1.5 text-[12px] font-medium">＋ Create new videos</button>
@@ -163,7 +197,7 @@ export default function RecoTabVv() {
               </div>
               <p className="mt-3 max-w-[760px] text-[12px] leading-5 text-[#777b82]">High-performing creator content from TikTok One and Content Suite, ready for your ads. Make sure you have the rights to use the content before showing it in your ads.</p>
 
-              {!hasAcknowledgedAutoSelect && (
+              {isFirstAd && !hasAcknowledgedAutoSelect && (
                 <div className="mt-4">
                   <KsInlineAlert
                     variant="suggestion"
@@ -182,7 +216,7 @@ export default function RecoTabVv() {
                   </span>
                   Select all
                 </button>
-                <div className="flex items-center gap-2 text-[11px] text-[#5f6368]"><KsSwitch checked={autoSelect} onChange={toggleAutoSelect} size="sm" /> Auto-select <span className="text-[#d0d1d3]">|</span><span> {selectedIds.length} / 20 selected</span></div>
+                <div className="flex items-center gap-2 text-[11px] text-[#5f6368]">{isFirstAd && <><KsSwitch checked={autoSelect} onChange={toggleAutoSelect} size="sm" /> Auto-select <span className="text-[#d0d1d3]">|</span></>}<span> {selectedIds.length} / 20 selected</span></div>
               </div>
 
               <div className="mt-3 grid grid-cols-5 gap-3">
