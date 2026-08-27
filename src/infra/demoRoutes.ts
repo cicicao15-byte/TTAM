@@ -7,26 +7,27 @@ export type DemoNavOption = {
 }
 
 export const DEMO_NAV_OPTIONS: DemoNavOption[] = [
-  { value: '/', label: 'Ads Dashboard' },
-  { value: '/campaigns', label: 'Ads Campaign' },
-  {
-    label: 'ACA',
-    children: [
-      { value: '/ads/edit', label: '1-URL无default值' },
-      { value: '/ads/edit-2', label: '2-URL有default值' },
-    ],
-  },
+  { value: '/reco-tab-vv', label: 'reco tab-vv' },
   {
     label: 'Carousel Template Editor',
     children: [
-      { value: '/carousel-template-editor-1', label: '1-原布局background为替换逻辑' },
-      { value: '/carousel-template-editor-2', label: '2-原布局background为新增逻辑' },
-      { value: '/carousel-template-editor-3', label: '3-新布局左侧两列设置，右侧preview' },
-      { value: '/carousel-template-editor-4', label: '4-新布局模版区可折叠' },
-      { value: '/carousel-template-editor-5', label: '5-新布局模版区悬浮' },
       { value: '/carousel-template-editor-6', label: '6-新布局模版区悬浮，图层和属性分开' },
+      { value: '/carousel-template-editor-5', label: '5-新布局模版区悬浮' },
+      { value: '/carousel-template-editor-4', label: '4-新布局模版区可折叠' },
+      { value: '/carousel-template-editor-3', label: '3-新布局左侧两列设置，右侧preview' },
+      { value: '/carousel-template-editor-2', label: '2-原布局background为新增逻辑' },
+      { value: '/carousel-template-editor-1', label: '1-原布局background为替换逻辑' },
     ],
   },
+  {
+    label: 'ACA',
+    children: [
+      { value: '/ads/edit-2', label: '2-URL有default值' },
+      { value: '/ads/edit', label: '1-URL无default值' },
+    ],
+  },
+  { value: '/campaigns', label: 'Ads Campaign' },
+  { value: '/', label: 'Ads Dashboard' },
 ];
 
 function collectRoutePaths(options: DemoNavOption[]): string[] {

@@ -12,6 +12,7 @@ import CarouselTemplateEditor3 from '@/pages/CarouselTemplateEditor3';
 import CarouselTemplateEditor4 from '@/pages/CarouselTemplateEditor4';
 import CarouselTemplateEditor5 from '@/pages/CarouselTemplateEditor5';
 import CarouselTemplateEditor6 from '@/pages/CarouselTemplateEditor6';
+import RecoTabVv from '@/pages/RecoTabVv';
 import NotFoundPage from '@/pages/NotFound';
 import { installKeystoneOverlayCompat } from '@/infra/keystoneOverlayCompat';
 
@@ -50,6 +51,7 @@ createRoot(document.getElementById('root')!).render(
             path="carousel-template-editor-6"
             element={<CarouselTemplateEditor6 />}
           />
+          <Route path="reco-tab-vv" element={<RecoTabVv />} />
           <Route
             path="ads/edit"
             element={
