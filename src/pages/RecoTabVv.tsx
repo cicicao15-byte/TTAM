@@ -11,6 +11,12 @@ type CreatorAsset = {
   background: string;
 };
 
+type Ad = {
+  id: number;
+  name: string;
+  supportsAutoSelect: boolean;
+};
+
 const CREATOR_ASSETS: CreatorAsset[] = [
   { id: 1, creator: 'Alexa.  SW', title: 'Meme #CameCut #pu...', duration: '00:07', size: '1080x1920', background: 'linear-gradient(155deg, #0f1118 0 26%, #f0ebdd 27% 54%, #1f2027 55% 100%)' },
   { id: 2, creator: 'DJAVA', title: 'Bhuo toke ? 😍😍 #h...', duration: '00:13', size: '720x1280', background: 'linear-gradient(155deg, #e6e3de 0 35%, #3f392f 36% 69%, #b48d74 70% 100%)' },
@@ -20,7 +26,7 @@ const CREATOR_ASSETS: CreatorAsset[] = [
 ];
 
 const RECOMMENDED_ASSET_IDS = [1, 2, 3, 4];
-const INITIAL_ADS = ['Ad name2026-08-18 07:02:34'];
+const INITIAL_ADS: Ad[] = [{ id: 1, name: 'Ad name2026-08-18 07:02:34', supportsAutoSelect: true }];
 
 export default function RecoTabVv() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -30,26 +36,60 @@ export default function RecoTabVv() {
   const [hasDismissedOuterNotice, setHasDismissedOuterNotice] = useState(false);
   const [selectedIds, setSelectedIds] = useState<number[]>(RECOMMENDED_ASSET_IDS);
   const [autoSelectedIds, setAutoSelectedIds] = useState<number[]>(RECOMMENDED_ASSET_IDS);
-  const [ads, setAds] = useState<string[]>(INITIAL_ADS);
-  const [activeAdIndex, setActiveAdIndex] = useState(0);
+  const [ads, setAds] = useState<Ad[]>(INITIAL_ADS);
+  const [activeAdId, setActiveAdId] = useState<number | null>(INITIAL_ADS[0].id);
+  const [nextAdId, setNextAdId] = useState(2);
   const [activeTab, setActiveTab] = useState('Recommended');
 
-  const isFirstAd = activeAdIndex === 0;
+  const activeAd = ads.find((ad) => ad.id === activeAdId);
+  const isFirstAd = activeAd?.supportsAutoSelect ?? false;
 
-  const selectAd = (index: number) => {
-    setActiveAdIndex(index);
-    setDrawerOpen(false);
-    const shouldUseAutoSelect = index === 0 && savedAutoSelect;
+  const applyAdSelectionDefaults = (supportsAutoSelect: boolean, useSavedSetting = true) => {
+    const shouldUseAutoSelect = supportsAutoSelect && (useSavedSetting ? savedAutoSelect : true);
     setAutoSelect(shouldUseAutoSelect);
     setSelectedIds(shouldUseAutoSelect ? RECOMMENDED_ASSET_IDS : []);
     setAutoSelectedIds(shouldUseAutoSelect ? RECOMMENDED_ASSET_IDS : []);
     setHasAcknowledgedAutoSelect(!shouldUseAutoSelect);
   };
 
+  const selectAd = (id: number) => {
+    const ad = ads.find((item) => item.id === id);
+    if (!ad) return;
+    setActiveAdId(id);
+    setDrawerOpen(false);
+    applyAdSelectionDefaults(ad.supportsAutoSelect);
+  };
+
   const addAd = () => {
-    const nextIndex = ads.length;
-    setAds((previous) => [...previous, `Ad name2026-08-18 07:02:${String(34 + nextIndex).padStart(2, '0')}`]);
-    selectAd(nextIndex);
+    const isNewFirstAd = ads.length === 0;
+    const newAd: Ad = { id: nextAdId, name: `Ad name2026-08-18 07:02:${String(33 + nextAdId).padStart(2, '0')}`, supportsAutoSelect: isNewFirstAd };
+    setAds((previous) => [...previous, newAd]);
+    setNextAdId((previous) => previous + 1);
+    setActiveAdId(newAd.id);
+    setDrawerOpen(false);
+    if (isNewFirstAd) {
+      setSavedAutoSelect(true);
+      setHasDismissedOuterNotice(false);
+    }
+    applyAdSelectionDefaults(newAd.supportsAutoSelect, !isNewFirstAd);
+  };
+
+  const deleteAd = (id: number) => {
+    const deletingIndex = ads.findIndex((ad) => ad.id === id);
+    const remainingAds = ads.filter((ad) => ad.id !== id);
+    setAds(remainingAds);
+    setDrawerOpen(false);
+
+    if (remainingAds.length === 0) {
+      setActiveAdId(null);
+      applyAdSelectionDefaults(false);
+      return;
+    }
+
+    if (id !== activeAdId) return;
+    const nextActiveAd = remainingAds[Math.min(deletingIndex, remainingAds.length - 1)];
+    setActiveAdId(nextActiveAd.id);
+    applyAdSelectionDefaults(nextActiveAd.supportsAutoSelect);
   };
 
   const toggleAsset = (id: number) => {
@@ -82,10 +122,7 @@ export default function RecoTabVv() {
   };
 
   const closeWithoutSaving = () => {
-    setAutoSelect(savedAutoSelect);
-    setSelectedIds(savedAutoSelect ? RECOMMENDED_ASSET_IDS : []);
-    setAutoSelectedIds(savedAutoSelect ? RECOMMENDED_ASSET_IDS : []);
-    setHasAcknowledgedAutoSelect(!savedAutoSelect);
+    applyAdSelectionDefaults(isFirstAd);
     setDrawerOpen(false);
   };
 
@@ -119,8 +156,11 @@ export default function RecoTabVv() {
             <div className="rounded-[6px] bg-[#f5f5f5] px-4 py-3 text-[14px] font-semibold">Video view20260818230</div>
             <div className="mt-5 flex items-center justify-between text-[12px] text-[#575b61]"><span>⌄ &nbsp; Ad group 20260818070224</span><button type="button" onClick={addAd} className="rounded-[3px] border border-[#bfc3c7] bg-white px-2 py-1 text-[11px] font-medium text-[#45494d]">＋ Add Ad</button></div>
             <div className="mt-3 space-y-2">
-              {ads.map((ad, index) => (
-                <button key={ad} type="button" onClick={() => selectAd(index)} className={`flex w-full items-center gap-2 rounded-[6px] px-3 py-3 text-left text-[12px] ${activeAdIndex === index ? 'bg-[#e8f8f7]' : 'bg-white hover:bg-[#f5f6f6]'}`}><span className="flex h-4 w-4 items-center justify-center rounded border border-[#bbbfc3] text-[10px]">▧</span><span className="min-w-0 flex-1 truncate">{ad}</span><span>⋮</span></button>
+              {ads.map((ad) => (
+                <div key={ad.id} className="group relative">
+                  <button type="button" onClick={() => selectAd(ad.id)} className={`flex w-full items-center gap-2 rounded-[6px] px-3 py-3 pr-9 text-left text-[12px] ${activeAdId === ad.id ? 'bg-[#e8f8f7]' : 'bg-white hover:bg-[#f5f6f6]'}`}><span className="flex h-4 w-4 items-center justify-center rounded border border-[#bbbfc3] text-[10px]">▧</span><span className="min-w-0 flex-1 truncate">{ad.name}</span><span className="group-hover:hidden">⋮</span></button>
+                  <button type="button" onClick={() => deleteAd(ad.id)} aria-label={`Delete ${ad.name}`} className="absolute right-2 top-1/2 hidden -translate-y-1/2 rounded p-1 text-[#6b7075] hover:bg-[#dff3f1] hover:text-[#b52d2d] group-hover:inline-flex">⌫</button>
+                </div>
               ))}
             </div>
           </aside>
@@ -130,7 +170,7 @@ export default function RecoTabVv() {
               <h1 className="mb-5 text-[18px] font-semibold">Ad</h1>
               <section className="rounded-[7px] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
                 <div className="flex items-center justify-between"><h2 className="text-[15px] font-semibold">Ad name</h2><span className="text-[#45494d]">⌃</span></div>
-                <div className="mt-4 h-8 max-w-[430px] rounded-[2px] border border-[#d9dbde] px-3 py-2 text-[11px] text-[#45494d]">{ads[activeAdIndex]}</div>
+                <div className="mt-4 h-8 max-w-[430px] rounded-[2px] border border-[#d9dbde] px-3 py-2 text-[11px] text-[#45494d]">{activeAd?.name ?? 'No Ad selected'}</div>
               </section>
 
               <div className="mt-3 grid grid-cols-[minmax(0,1fr)_300px] gap-3">
