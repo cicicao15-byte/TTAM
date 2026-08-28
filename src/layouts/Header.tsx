@@ -6,6 +6,10 @@ import { AppHeader, HeaderIconButton, HeaderAccountDropdown } from '@/components
 import tiktokLogo from '@/assets/tiktok-logo.svg';
 import { DEMO_NAV_OPTIONS } from '@/infra/demoRoutes';
 
+type HeaderProps = {
+  demoOptions?: typeof DEMO_NAV_OPTIONS;
+};
+
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/' },
   { label: 'Campaigns', path: '/campaigns' },
@@ -58,7 +62,7 @@ function AlertBar() {
   );
 }
 
-export function Header() {
+export function Header({ demoOptions = DEMO_NAV_OPTIONS }: HeaderProps) {
   return (
     <header>
       <AppHeader
@@ -67,7 +71,7 @@ export function Header() {
         brandHref="/"
         userInitial="J"
         navItems={NAV_ITEMS}
-        demoOptions={DEMO_NAV_OPTIONS}
+        demoOptions={demoOptions}
         trailingActions={
           <>
             <HeaderIconButton icon={<KsIconSearch size={24} />} ariaLabel="Search" />

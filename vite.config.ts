@@ -1,11 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { sites } from '@openai/sites-vite-plugin';
+import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), sites()],
+  build: {
+    cssMinify: 'esbuild',
+  },
   resolve: {
     alias: {
       '@': '/src',
+      roughjs: fileURLToPath(new URL('./node_modules/roughjs/bundled/rough.esm.js', import.meta.url)),
     },
   },
   server: {

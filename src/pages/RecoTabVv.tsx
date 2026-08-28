@@ -60,9 +60,21 @@ const INITIAL_ADS: Ad[] = [{ id: 1, name: 'Ad name2026-08-18 07:02:34', supports
 
 type RecoTabVvProps = {
   autoSelectControl?: 'banner' | 'toggle' | 'summary';
+  experienceOnly?: boolean;
 };
 
-export default function RecoTabVv({ autoSelectControl = 'toggle' }: RecoTabVvProps) {
+const RECO_EXPERIENCE_OPTIONS = [
+  {
+    label: 'Reco tab–VV',
+    showDivider: false,
+    children: [
+      { value: '/reco-experience/banner', label: '1–Banner' },
+      { value: '/reco-experience/toggle', label: '2–Toggle' },
+    ],
+  },
+];
+
+export default function RecoTabVv({ autoSelectControl = 'toggle', experienceOnly = false }: RecoTabVvProps) {
   const [campaignOn, setCampaignOn] = useState(true);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [savedAutoSelect, setSavedAutoSelect] = useState(true);
@@ -286,7 +298,7 @@ export default function RecoTabVv({ autoSelectControl = 'toggle' }: RecoTabVvPro
 
   return (
     <div className="min-h-screen bg-[#f7f7f7] text-[#161823]">
-      <Header />
+      <Header demoOptions={experienceOnly ? RECO_EXPERIENCE_OPTIONS : undefined} />
 
       <div className="relative min-h-[calc(100vh-100px)] overflow-hidden bg-[#f7f7f7]">
         <div className="flex min-h-[calc(100vh-100px)]">

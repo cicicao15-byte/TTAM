@@ -7,37 +7,39 @@
   },
   "scripts": {
     "dev": "vite --open",
-    "build": "vite build",
+    "build": "vite build && node scripts/build-worker.mjs",
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-router-dom": "^7.0.0",
-    "@visactor/vchart": "1.13.2",
-    "@byted-keystone/react": "file:./vendor/byted-keystone-react-1.1.37.tgz",
-    "@fe-infra/tailwindcss-keystone-preset": "file:./vendor/fe-infra-tailwindcss-keystone-preset-2.0.22.tgz",
-    "@fe-infra/keystone-icons-react": "file:./vendor/fe-infra-keystone-icons-react-0.7.9.tgz",
-    "@fe-infra/chart-react": "file:./vendor/fe-infra-chart-react-0.4.20.tgz",
-    "clsx": "^2.1.1",
     "@byted-keystone/core": "file:./vendor/byted-keystone-core-1.1.37.tgz",
+    "@byted-keystone/react": "file:./vendor/byted-keystone-react-1.1.37.tgz",
     "@byted-keystone/react-output-target": "file:./vendor/byted-keystone-react-output-target-0.2.9.tgz",
     "@byted-keystone/table": "file:./vendor/byted-keystone-table-0.0.1.tgz",
     "@fe-infra/chart": "file:./vendor/fe-infra-chart-1.0.12.tgz",
+    "@fe-infra/chart-react": "file:./vendor/fe-infra-chart-react-0.4.20.tgz",
     "@fe-infra/chart-theme": "file:./vendor/fe-infra-chart-theme-0.4.4.tgz",
     "@fe-infra/keystone-design-tokens": "file:./vendor/fe-infra-keystone-design-tokens-2.0.21.tgz",
     "@fe-infra/keystone-icons": "file:./vendor/fe-infra-keystone-icons-0.7.9.tgz",
-    "@fe-infra/keystone-locales": "file:./vendor/fe-infra-keystone-locales-0.5.0.tgz"
+    "@fe-infra/keystone-icons-react": "file:./vendor/fe-infra-keystone-icons-react-0.7.9.tgz",
+    "@fe-infra/keystone-locales": "file:./vendor/fe-infra-keystone-locales-0.5.0.tgz",
+    "@fe-infra/tailwindcss-keystone-preset": "file:./vendor/fe-infra-tailwindcss-keystone-preset-2.0.22.tgz",
+    "@openai/sites-vite-plugin": "^0.2.0",
+    "@visactor/vchart": "1.13.2",
+    "clsx": "^2.1.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^7.0.0"
   },
   "devDependencies": {
-    "agentation": "^3.0.1",
     "@eslint/js": "^9.0.0",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
-    "@vitejs/plugin-react": "^4.4.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "agentation": "^3.0.1",
     "autoprefixer": "^10.4.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9.0.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.0",
@@ -47,7 +49,7 @@
     "tailwindcss": "^3.4.0",
     "typescript": "^5.8.0",
     "typescript-eslint": "^8.0.0",
-    "vite": "^6.3.0"
+    "vite": "^8.2.2"
   },
   "ksDesign": {
     "template": "playground"
