@@ -4,6 +4,7 @@ import { sites } from '@openai/sites-vite-plugin';
 import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
+  base: process.env.GITHUB_ACTIONS === 'true' ? '/TTAM/' : '/',
   plugins: [react(), sites()],
   build: {
     cssMinify: 'esbuild',

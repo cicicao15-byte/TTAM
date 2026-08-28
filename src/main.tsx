@@ -1,7 +1,7 @@
 import './index.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom';
 import RootLayout from '@/layouts/RootLayout';
 import AdsDashboard from '@/pages/AdsDashboard';
 import AdsCampaign from '@/pages/AdsCampaign';
@@ -20,9 +20,11 @@ if (import.meta.env.DEV) {
   installKeystoneOverlayCompat();
 }
 
+const Router = window.location.hostname.endsWith('github.io') ? HashRouter : BrowserRouter;
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <Router>
       <Routes>
         <Route element={<RootLayout />}>
           <Route index element={<AdsDashboard />} />
@@ -75,6 +77,6 @@ createRoot(document.getElementById('root')!).render(
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </Router>
   </StrictMode>,
 );
