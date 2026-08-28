@@ -4,10 +4,19 @@ export type DemoNavOption = {
   disabled?: boolean;
   children?: DemoNavOption[];
   showHelpIcon?: boolean;
+  showDivider?: boolean;
 }
 
 export const DEMO_NAV_OPTIONS: DemoNavOption[] = [
-  { value: '/reco-tab-vv', label: 'reco tab-vv' },
+  {
+    label: 'Reco tab-VV',
+    showDivider: false,
+    children: [
+      { value: '/reco-tab-v-1', label: '1-Banner' },
+      { value: '/reco-tab-v-2', label: '2-Toggle' },
+      { value: '/reco-tab-v-3', label: '3-Toggle+tag' },
+    ],
+  },
   {
     label: 'Carousel Template Editor',
     children: [

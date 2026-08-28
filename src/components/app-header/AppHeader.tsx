@@ -143,7 +143,7 @@ export function AppHeader({
       const expanded = expandedGroups[groupKey] ?? false;
 
       return (
-        <div key={option.label ?? String(option.value)} className={clsx('mt-2 first:mt-0', depth === 0 && 'border-t border-neutral-fillLow pt-3')}>
+        <div key={option.label ?? String(option.value)} className={clsx('mt-2 first:mt-0', depth === 0 && option.showDivider !== false && 'border-t border-neutral-fillLow pt-3')}>
           <button
             type="button"
             className={clsx(menuItemClass, 'text-neutral-highOnSurface hover:bg-neutral-surface1', indentClass)}

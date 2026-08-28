@@ -51,6 +51,9 @@ createRoot(document.getElementById('root')!).render(
             path="carousel-template-editor-6"
             element={<CarouselTemplateEditor6 />}
           />
+          <Route path="reco-tab-v-1" element={<RecoTabVv autoSelectControl="banner" />} />
+          <Route path="reco-tab-v-2" element={<RecoTabVv autoSelectControl="toggle" />} />
+          <Route path="reco-tab-v-3" element={<RecoTabVv autoSelectControl="summary" />} />
           <Route path="reco-tab-vv" element={<RecoTabVv />} />
           <Route
             path="ads/edit"
